@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
 
 ---
 
-### **📌 Create the Register Screen (`register_screen.dart`)**
+### **📌 Create the Register Screen (`screens/RegisterScreen.dart`)**
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -221,8 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 }
 ```
 
-
-## **2. Implement Login with Email and Password**
+## **2. Implement Login with Email and Password(`screens/LoginScreen.dart`)**
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_supabase_authentication_demo/HomeScreen.dart';

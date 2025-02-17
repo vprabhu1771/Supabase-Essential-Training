@@ -56,40 +56,87 @@ class MyApp extends StatelessWidget {
 ### **📌 Create the Register Screen (`register_screen.dart`)**
 ```dart
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_supabase_authentication_demo/auth/LoginScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../HomeScreen.dart';
+
 class RegisterScreen extends StatefulWidget {
+  final String title;
+
+  const RegisterScreen({super.key, required this.title});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
+  final storage = FlutterSecureStorage(); // Secure storage instance
   final supabase = Supabase.instance.client;
+
+  bool _isLoading = false;
+  bool _obscureText = true; // To toggle password visibility
+
+  @override
+  void initState() {
+    super.initState();
+    emailController.text = "admin@gmail.com";
+    passwordController.text = "admin@123";
+  }
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
 
     try {
       await supabase.auth.signUp(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: emailController.text,
+        password: passwordController.text,
       );
 
       Fluttertoast.showToast(msg: "Registration Successful!");
-      Navigator.pushReplacementNamed(context, '/home'); // Navigate to Home
+      signIn();
     } catch (error) {
       Fluttertoast.showToast(msg: "Error: ${error.toString()}");
+      print("Error: ${error.toString()}");
     }
-
     setState(() => _isLoading = false);
+  }
+
+  Future<void> signIn() async {
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (response.session != null) {
+        await storage.write(key: 'session', value: response.session!.accessToken);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login successful!')),
+        );
+
+        Navigator.pop(context);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => HomeScreen(title: 'Home')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed. Please try again.')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $error')),
+      );
+    }
   }
 
   @override
@@ -104,30 +151,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                controller: _emailController,
+                controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) =>
-                    value!.isEmpty ? 'Enter a valid email' : null,
+                value!.isEmpty ? 'Enter a valid email' : null,
               ),
               SizedBox(height: 10),
               TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
+                controller: passwordController,
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
                 validator: (value) =>
-                    value!.length < 6 ? 'Password must be at least 6 characters' : null,
+                value!.length < 6 ? 'Password must be at least 6 characters' : null,
               ),
               SizedBox(height: 20),
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _signUp,
-                      child: Text('Register'),
-                    ),
+                onPressed: _signUp,
+                child: Text('Register'),
+              ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => LoginScreen(title: 'Login')),
+                  );
                 },
                 child: Text("Already have an account? Login"),
               ),
@@ -145,30 +204,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 ### **📌 Create Home Screen (`home_screen.dart`)**
 ```dart
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_supabase_authentication_demo/widgets/CustomDrawer.dart';
 
-class HomeScreen extends StatelessWidget {
-  final supabase = Supabase.instance.client;
+class HomeScreen extends StatefulWidget {
 
-  Future<void> _signOut(BuildContext context) async {
-    await supabase.auth.signOut();
-    Navigator.pushReplacementNamed(context, '/register');
-  }
+  final String title;
 
+  const HomeScreen({super.key, required this.title});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () => _signOut(context),
-          ),
-        ],
+        title: Text(widget.title),
       ),
+      drawer: CustomDrawer(parentContext: context),
       body: Center(
-        child: Text('Welcome to Supabase!'),
+        child: Text(widget.title),
       ),
     );
   }

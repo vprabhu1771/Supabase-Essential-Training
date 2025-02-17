@@ -8,6 +8,14 @@ Here's a **Flutter Supabase Register (Sign Up) Screen** with **Email & Password 
 3. **Handle Sign-Up with Supabase Auth**
 4. **Navigate to the Home Screen after Successful Signup**
 
+`.env`
+
+```env
+SUPA_BASE_URL=
+SUPA_BASE_ANON_KEY=
+```
+
+
 ---
 
 ### **📌 Install Dependencies**
@@ -15,9 +23,15 @@ Add `supabase_flutter` to `pubspec.yaml`:
 ```yaml
 dependencies:
   flutter:
-    sdk: flutter
+    sdk: flutter  
   supabase_flutter: ^2.0.0
+  flutter_dotenv: ^5.2.1
+  flutter_secure_storage: ^9.0.0
   fluttertoast: ^8.2.2  # For toast messages (optional)
+
+
+  assets:
+    - .env
 ```
 Run:
 ```bash

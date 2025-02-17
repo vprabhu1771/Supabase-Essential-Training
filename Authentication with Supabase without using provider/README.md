@@ -1,3 +1,9 @@
+# Authentication with Supabase
+
+```
+https://www.youtube.com/watch?v=njeo_g-3tPw
+```
+
 Here's a **Flutter Supabase Register (Sign Up) Screen** with **Email & Password Authentication**. It includes form validation and error handling.
 
 ---

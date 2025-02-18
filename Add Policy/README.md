@@ -1,0 +1,1 @@
+Table Editor -> table_name -> ... -> View Polices -> Create Policy -> SELECT Enable read access for all users

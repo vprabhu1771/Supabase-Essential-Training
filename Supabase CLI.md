@@ -15,6 +15,14 @@ Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 # Install the Supabase CLI
 
 ```
+scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+```
+
+```
+scoop install supabase
+```
+
+```
 npm install supabase --save-dev
 ```
 

@@ -22,6 +22,8 @@ scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
 scoop install supabase
 ```
 
+# Supabase Version
+
 ```
 supabase --version
 ```

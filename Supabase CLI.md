@@ -23,6 +23,14 @@ scoop install supabase
 ```
 
 ```
+supabase --version
+```
+
+```
+2.15.8
+```
+
+```
 npm install supabase --save-dev
 ```
 

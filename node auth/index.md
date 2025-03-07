@@ -1,3 +1,4 @@
+```
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
@@ -53,3 +54,4 @@ async function callSupabaseFunction(jwtToken) {
 
 // Run the function
 loginAndGetJWT();
+```

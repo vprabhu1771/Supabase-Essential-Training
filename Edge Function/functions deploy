@@ -1,0 +1,15 @@
+```
+supabase link --project-ref=<SUPA_BASE_URL>
+```
+
+```
+Enter your database password (or leave blank to skip):
+```
+
+```
+supabase functions deploy
+```
+
+```
+supabase secrets set --env-file ./supabase/.env
+```
